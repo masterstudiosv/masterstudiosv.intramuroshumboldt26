@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipo · Intramuros Humboldt 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--rojo:#DC2626;--rojo2:#EF4444;--rojo3:#B91C1C;--amarillo:#FACC15;--d1:#0D0D0D;--d2:#111;--d3:#161616;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow Condensed',sans-serif;background:var(--d2);color:#fff;overflow-x:hidden;}
+  .bebas{font-family:'Bebas Neue',cursive;} .inter{font-family:'Inter',sans-serif;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#111;}::-webkit-scrollbar-thumb{background:var(--rojo);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,13,0.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05);}
+  .nav-link{color:rgba(255,255,255,0.6);transition:color 0.2s;font-weight:600;font-size:15px;}
+  .nav-link:hover{color:var(--amarillo);}
+  .card{background:var(--d3);border:1px solid rgba(255,255,255,0.07);border-radius:16px;}
+  .btn-red{background:linear-gradient(135deg,var(--rojo),var(--rojo3));color:#fff;font-weight:700;transition:all 0.3s;cursor:pointer;}
+  .btn-red:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(220,38,38,0.4);}
+  .badge-admin{background:linear-gradient(135deg,var(--amarillo),#FDE047);color:#000;}
+  .badge-arbitro{background:linear-gradient(135deg,var(--rojo),var(--rojo3));color:#fff;}
+  /* FIFA CARD */
+  .player-card{background:linear-gradient(145deg,#1a0a0a 0%,#1a1a2e 60%,#0f1a30 100%);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);cursor:pointer;position:relative;}
+  .player-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(220,38,38,0.08),transparent 50%);opacity:0;transition:opacity 0.3s;}
+  .player-card:hover{transform:translateY(-8px) scale(1.02);border-color:rgba(220,38,38,0.4);box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 24px rgba(220,38,38,0.12);}
+  .player-card:hover::before{opacity:1;}
+  .player-photo{width:100%;height:180px;object-fit:cover;object-position:top;}
+  .player-ph{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(180deg,rgba(220,38,38,0.12),rgba(220,38,38,0.03));}
+  .num-badge{position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:17px;color:#000;background:linear-gradient(135deg,var(--amarillo),#FDE047);box-shadow:0 4px 12px rgba(250,204,21,0.4);}
+  .susp-badge{position:absolute;top:10px;right:10px;background:rgba(220,38,38,0.9);color:#fff;font-size:9px;font-family:'Inter',sans-serif;font-weight:700;padding:3px 7px;border-radius:20px;letter-spacing:1px;}
+  .stat-pill{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 4px;border-radius:8px;background:rgba(255,255,255,0.04);transition:background 0.2s;}
+  .stat-pill:hover{background:rgba(255,255,255,0.08);}
+  /* TABS */
+  .tab-btn{padding:10px 20px;font-weight:700;font-size:15px;border-bottom:2px solid transparent;transition:all 0.2s;cursor:pointer;color:rgba(255,255,255,0.4);}
+  .tab-btn.active{border-color:var(--rojo);color:#fff;}
+  .tab-btn:hover:not(.active){color:rgba(255,255,255,0.7);}
+  /* MODAL */
+  .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);}
+  .modal.show{display:flex;animation:fi 0.3s;}
+  @keyframes fi{from{opacity:0}to{opacity:1}}
+  @keyframes su{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .modal-box{animation:su 0.3s;max-height:92vh;overflow-y:auto;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center bebas text-sm" style="background:var(--rojo)">IH</div>
+        <div class="hidden sm:block"><div class="bebas text-xl leading-none" style="color:var(--amarillo)">INTRAMUROS</div><div class="inter text-xs text-white/30">HUMBOLDT 2026</div></div>
+      </a>
+      <div class="hidden md:flex items-center gap-5 ml-6">
+        <a href="index.html" class="nav-link">INICIO</a>
+        <a href="equipos.html" class="nav-link" style="color:var(--amarillo)">EQUIPOS</a>
+        <a href="index.html#posiciones" class="nav-link">POSICIONES</a>
+        <a href="index.html#avisos" class="nav-link">AVISOS</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-3" id="navUser">
+      <a href="equipos.html" class="inter text-sm text-white/40 hover:text-white transition-colors">← Equipos</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="pt-20" id="heroBanner">
+  <div class="px-6 py-12" style="background:linear-gradient(180deg,rgba(220,38,38,0.15),rgba(220,38,38,0.03),transparent)">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-8">
+      <div class="w-28 h-28 rounded-2xl flex items-center justify-center bebas text-5xl border-2 flex-shrink-0 overflow-hidden" id="escudoBox" style="background:rgba(220,38,38,0.1);border-color:rgba(220,38,38,0.3);color:var(--rojo)">?</div>
+      <div class="text-center md:text-left">
+        <div class="inter text-sm tracking-widest mb-1" id="secLabel" style="color:var(--rojo)">SECCIÓN</div>
+        <h1 class="bebas leading-none text-white mb-4" id="eqNomLabel" style="font-size:clamp(48px,8vw,90px)">...</h1>
+        <div class="flex flex-wrap gap-6 justify-center md:justify-start">
+          <div class="text-center"><div class="bebas text-4xl" style="color:var(--amarillo)" id="sJug">0</div><div class="inter text-xs text-white/40">JUGADORES</div></div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center"><div class="bebas text-4xl text-green-400" id="sGan">0</div><div class="inter text-xs text-white/40">GANADOS</div></div>
+          <div class="text-center"><div class="bebas text-4xl text-yellow-400" id="sEmp">0</div><div class="inter text-xs text-white/40">EMPATES</div></div>
+          <div class="text-center"><div class="bebas text-4xl text-red-400" id="sPer">0</div><div class="inter text-xs text-white/40">PERDIDOS</div></div>
+          <div class="w-px bg-white/10"></div>
+          <div class="text-center"><div class="bebas text-4xl" style="color:var(--amarillo)" id="sPts">0</div><div class="inter text-xs text-white/40">PUNTOS</div></div>
+          <div class="text-center"><div class="bebas text-4xl" style="color:var(--rojo)" id="sGol">0</div><div class="inter text-xs text-white/40">GOLES</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Tabs -->
+  <div class="sticky top-16 z-40 border-b px-6" style="background:rgba(13,13,13,0.96);backdrop-filter:blur(16px);border-color:rgba(255,255,255,0.08)">
+    <div class="max-w-7xl mx-auto flex">
+      <button class="tab-btn active" onclick="showTab('jugadores',this)">JUGADORES</button>
+      <button class="tab-btn" onclick="showTab('partidos',this)">PARTIDOS</button>
+      <button class="tab-btn" onclick="showTab('historial',this)">HISTORIAL</button>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+  <div id="tab-jugadores">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5" id="jugGrid">
+      <div class="col-span-full text-center py-20 inter text-white/20">Cargando...</div>
+    </div>
+  </div>
+  <div id="tab-partidos" class="hidden space-y-3" id="ptList"></div>
+  <div id="tab-historial" class="hidden space-y-2" id="evList"></div>
+</div>
+
+<!-- PLAYER MODAL -->
+<div class="modal items-center justify-center p-4" id="playerModal">
+  <div class="modal-box card rounded-3xl w-full max-w-md overflow-hidden relative" style="border:1px solid rgba(220,38,38,0.2)">
+    <div id="playerModalInner"></div>
+    <button onclick="closeModal('playerModal')" class="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all text-xl">×</button>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/equipos.js"></script>
+<script src="js/modules.js"></script>
+<script>
+const pid = new URLSearchParams(window.location.search).get('id');
+let equipo = null;
+
+function updateNav(){
+  const u=Auth.getCurrentUser(); const el=document.getElementById('navUser');
+  if(u){const b=u.role==='admin'?'badge-admin':'badge-arbitro';const lnk=u.role==='admin'?'admin.html':'arbitro.html';
+  el.innerHTML=`<div class="flex items-center gap-3"><span class="${b} px-3 py-1 rounded-full inter text-xs font-bold">${u.role==='admin'?'ADMIN':'ÁRBITRO'}</span><a href="${lnk}" class="btn-red px-4 py-2 rounded-xl inter text-sm font-semibold">Panel</a><button onclick="Auth.logout()" class="inter text-sm text-white/30 hover:text-red-400">Salir</button></div>`;}
+  else el.innerHTML=`<div class="flex items-center gap-3"><a href="equipos.html" class="inter text-sm text-white/40 hover:text-white">← Equipos</a></div>`;
+}
+
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);}));
+
+function showTab(tab,btn){
+  ['jugadores','partidos','historial'].forEach(t=>document.getElementById('tab-'+t).classList.add('hidden'));
+  document.getElementById('tab-'+tab).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function load(){
+  if(!pid){window.location.href='equipos.html';return;}
+  equipo=Equipos.getById(pid);
+  if(!equipo){window.location.href='equipos.html';return;}
+  document.title=equipo.nombre+' · Intramuros Humboldt 2026';
+  document.getElementById('eqNomLabel').textContent=equipo.nombre;
+  document.getElementById('secLabel').textContent=equipo.seccion;
+  if(equipo.escudo) document.getElementById('escudoBox').innerHTML=`<img src="${equipo.escudo}" class="w-full h-full object-cover">`;
+  else document.getElementById('escudoBox').textContent=equipo.nombre.charAt(0);
+  const st=Equipos.getStats(pid);
+  document.getElementById('sJug').textContent=(equipo.jugadores||[]).length;
+  document.getElementById('sGan').textContent=st.ganados;
+  document.getElementById('sEmp').textContent=st.empatados;
+  document.getElementById('sPer').textContent=st.perdidos;
+  document.getElementById('sPts').textContent=st.puntos;
+  document.getElementById('sGol').textContent=Eventos.getAll().filter(e=>e.equipoId===pid&&e.tipo==='gol').length;
+  loadJugadores();loadPartidos();loadHistorial();
+}
+
+function loadJugadores(){
+  const jgs=equipo.jugadores||[];
+  const g=document.getElementById('jugGrid');
+  if(!jgs.length){g.innerHTML='<div class="col-span-full text-center py-20 inter text-white/20">Sin jugadores</div>';return;}
+  g.innerHTML=jgs.map(j=>{
+    const st=Jugadores.getStats(pid,j.numero); const susp=Jugadores.isSuspendido(pid,j.numero);
+    return `<div class="player-card" onclick="openPlayer('${j.numero}')">
+      <div class="relative">
+        ${j.foto?`<img src="${j.foto}" class="player-photo">`:`<div class="player-ph">👤</div>`}
+        <div class="num-badge">${j.numero}</div>
+        ${susp?'<div class="susp-badge">SUSP.</div>':''}
+      </div>
+      <div class="p-4">
+        <div class="font-bold text-white text-sm mb-0.5 truncate">${j.nombre}</div>
+        <div class="inter text-xs text-white/30 mb-3">${j.posicion||'Jugador'}</div>
+        <div class="flex gap-1">
+          <div class="stat-pill"><span class="bebas text-lg" style="color:var(--rojo)">${st.goles}</span><span class="inter text-xs text-white/30">⚽</span></div>
+          <div class="stat-pill"><span class="bebas text-lg text-yellow-400">${st.amarillas}</span><span class="inter text-xs text-white/30">🟨</span></div>
+          <div class="stat-pill"><span class="bebas text-lg text-red-500">${st.rojas}</span><span class="inter text-xs text-white/30">🟥</span></div>
+          <div class="stat-pill"><span class="bebas text-lg text-white/50">${st.faltas}</span><span class="inter text-xs text-white/30">⚠️</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadPartidos(){
+  const pts=Partidos.getAll().filter(p=>p.equipoLocalId===pid||p.equipoVisitanteId===pid);
+  const el=document.getElementById('tab-partidos');
+  if(!pts.length){el.innerHTML='<div class="text-center py-20 inter text-white/20">Sin partidos</div>';return;}
+  const sLab={programado:'Programado',en_curso:'EN CURSO',finalizado:'Finalizado'};
+  const sCol={programado:'rgba(255,255,255,0.3)',en_curso:'#22c55e',finalizado:'rgba(255,255,255,0.2)'};
+  el.innerHTML=pts.map(p=>{
+    const eL=Equipos.getById(p.equipoLocalId); const eV=Equipos.getById(p.equipoVisitanteId);
+    const esLocal=p.equipoLocalId===pid;
+    let rClass='text-white/30 inter text-xs',rLabel='';
+    if(p.estado==='finalizado'){const gF=esLocal?p.golesLocal:p.golesVisitante;const gC=esLocal?p.golesVisitante:p.golesLocal;rLabel=gF>gC?'VICTORIA':gF<gC?'DERROTA':'EMPATE';rClass=gF>gC?'text-green-400 font-bold inter text-xs':gF<gC?'text-red-400 font-bold inter text-xs':'text-yellow-400 font-bold inter text-xs';}
+    return `<div class="card p-5">
+      <div class="flex items-center justify-between mb-2"><span class="${rClass}">${rLabel||sLab[p.estado]}</span><span class="inter text-xs text-white/30">${p.fecha||''} ${p.hora?'· '+p.hora:''}</span></div>
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex-1 text-right"><div class="font-semibold ${p.equipoLocalId===pid?'text-white':'text-white/50'}">${eL?.nombre||'?'}</div><div class="inter text-xs text-white/30">${eL?.seccion||''}</div></div>
+        <div class="px-5 py-2 rounded-xl" style="background:rgba(220,38,38,0.1)">${p.estado!=='programado'?`<span class="bebas text-2xl" style="color:var(--amarillo)">${p.golesLocal} - ${p.golesVisitante}</span>`:`<span class="text-white/30 inter text-sm">vs</span>`}</div>
+        <div class="flex-1 text-left"><div class="font-semibold ${p.equipoVisitanteId===pid?'text-white':'text-white/50'}">${eV?.nombre||'?'}</div><div class="inter text-xs text-white/30">${eV?.seccion||''}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadHistorial(){
+  const evs=Eventos.getAll().filter(e=>e.equipoId===pid);
+  const el=document.getElementById('tab-historial');
+  if(!evs.length){el.innerHTML='<div class="text-center py-20 inter text-white/20">Sin eventos</div>';return;}
+  const ico={gol:'⚽',amarilla:'🟨',roja:'🟥',falta:'⚠️'};
+  const col={gol:'var(--rojo)',amarilla:'#EAB308',roja:'#E63946',falta:'#F97316'};
+  el.innerHTML=evs.slice().reverse().map(ev=>{
+    const j=(equipo.jugadores||[]).find(jg=>String(jg.numero)===String(ev.numeroJugador));
+    const p=Partidos.getById(ev.partidoId); const vs=p?(p.equipoLocalId===pid?Equipos.getById(p.equipoVisitanteId):Equipos.getById(p.equipoLocalId)):null;
+    return `<div class="card p-4 flex items-center gap-3" style="border-left:3px solid ${col[ev.tipo]||'rgba(255,255,255,0.2)'}">
+      <span class="text-xl">${ico[ev.tipo]||'📋'}</span>
+      <div class="flex-1"><div class="font-semibold text-sm">${ev.tipo.charAt(0).toUpperCase()+ev.tipo.slice(1)} · #${ev.numeroJugador} ${j?.nombre||''}</div>${ev.justificacion?`<div class="inter text-xs text-white/30 mt-0.5">${ev.justificacion}</div>`:''}</div>
+      <div class="text-right">${ev.minuto?`<div class="bebas text-xl" style="color:var(--amarillo)">${ev.minuto}'</div>`:''}${vs?`<div class="inter text-xs text-white/30">vs ${vs.nombre}</div>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function openPlayer(num){
+  const j=(equipo.jugadores||[]).find(jg=>String(jg.numero)===String(num)); if(!j) return;
+  const st=Jugadores.getStats(pid,j.numero); const susp=Jugadores.isSuspendido(pid,j.numero);
+  document.getElementById('playerModalInner').innerHTML=`
+    <div class="relative">
+      ${j.foto?`<img src="${j.foto}" class="w-full h-64 object-cover object-top">`:`<div class="w-full h-64 flex items-center justify-center text-8xl" style="background:linear-gradient(180deg,rgba(220,38,38,0.12),rgba(220,38,38,0.02))">👤</div>`}
+      <div style="position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(transparent,rgba(13,13,13,0.98))"></div>
+      <div style="position:absolute;bottom:16px;left:20px;display:flex;align-items:flex-end;gap:12px">
+        <div class="bebas leading-none" style="font-size:64px;color:var(--amarillo)">${j.numero}</div>
+        <div><div class="bebas text-2xl text-white">${j.nombre}</div>${j.posicion?`<div class="inter text-xs text-white/50">${j.posicion}</div>`:''}</div>
+      </div>
+      ${susp?'<div style="position:absolute;top:12px;right:12px;background:rgba(220,38,38,0.9);color:#fff;font-size:10px;font-family:Inter,sans-serif;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:1px">SUSPENDIDO</div>':''}
+    </div>
+    <div class="p-5">
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="rounded-xl p-3 text-center" style="background:rgba(255,255,255,0.05)"><div class="inter text-xs text-white/40 mb-1">EDAD</div><div class="bebas text-3xl text-white">${j.edad||'-'}</div></div>
+        <div class="rounded-xl p-3 text-center" style="background:rgba(255,255,255,0.05)"><div class="inter text-xs text-white/40 mb-1">EQUIPO</div><div class="font-bold text-white text-sm">${equipo.nombre}</div></div>
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        <div class="rounded-xl p-3 text-center" style="background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2)"><div class="bebas text-3xl" style="color:var(--rojo)">${st.goles}</div><div class="inter text-xs text-white/40">GOLES</div></div>
+        <div class="rounded-xl p-3 text-center" style="background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.2)"><div class="bebas text-3xl text-yellow-400">${st.amarillas}</div><div class="inter text-xs text-white/40">🟨</div></div>
+        <div class="rounded-xl p-3 text-center" style="background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2)"><div class="bebas text-3xl text-red-500">${st.rojas}</div><div class="inter text-xs text-white/40">🟥</div></div>
+        <div class="rounded-xl p-3 text-center" style="background:rgba(255,255,255,0.05)"><div class="bebas text-3xl text-white/50">${st.faltas}</div><div class="inter text-xs text-white/40">FALTAS</div></div>
+      </div>
+    </div>`;
+  openModal('playerModal');
+}
+
+load(); updateNav();
+</script>
+</body>
+</html>

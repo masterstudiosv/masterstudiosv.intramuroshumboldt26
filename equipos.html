@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipos · Intramuros Humboldt 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--rojo:#DC2626;--rojo2:#EF4444;--rojo3:#B91C1C;--amarillo:#FACC15;--d1:#0D0D0D;--d2:#111;--d3:#161616;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow Condensed',sans-serif;background:var(--d2);color:#fff;overflow-x:hidden;}
+  .bebas{font-family:'Bebas Neue',cursive;} .inter{font-family:'Inter',sans-serif;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#111;}::-webkit-scrollbar-thumb{background:var(--rojo);}
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,13,0.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05);}
+  .nav-link{color:rgba(255,255,255,0.6);transition:color 0.2s;font-weight:600;font-size:15px;}
+  .nav-link:hover,.nav-link.active{color:var(--amarillo);}
+  .dropdown{position:relative;}
+  .dropdown-menu{display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid rgba(220,38,38,0.2);border-radius:12px;min-width:180px;z-index:300;overflow:hidden;}
+  .dropdown:hover .dropdown-menu{display:block;}
+  .dropdown-item{display:block;padding:10px 18px;color:rgba(255,255,255,0.6);font-size:14px;transition:all 0.2s;}
+  .dropdown-item:hover{background:rgba(220,38,38,0.1);color:#fff;}
+  .card{background:var(--d3);border:1px solid rgba(255,255,255,0.07);border-radius:16px;transition:all 0.3s;cursor:pointer;}
+  .card:hover{border-color:rgba(220,38,38,0.4);transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,0.5),0 0 20px rgba(220,38,38,0.08);}
+  .inp{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:10px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:14px;width:100%;transition:all 0.2s;}
+  .inp:focus{outline:none;border-color:var(--rojo);}
+  .inp::placeholder{color:rgba(255,255,255,0.3);}
+  .filter-btn{padding:7px 18px;border-radius:30px;font-weight:700;transition:all 0.2s;cursor:pointer;font-size:13px;letter-spacing:0.05em;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);}
+  .filter-btn.active,.filter-btn:hover{background:var(--rojo);border-color:var(--rojo);color:#fff;}
+  .btn-red{background:linear-gradient(135deg,var(--rojo),var(--rojo3));color:#fff;font-weight:700;transition:all 0.3s;cursor:pointer;}
+  .btn-red:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(220,38,38,0.4);}
+  .badge-admin{background:linear-gradient(135deg,var(--amarillo),#FDE047);color:#000;}
+  .badge-arbitro{background:linear-gradient(135deg,var(--rojo),var(--rojo3));color:#fff;}
+  .fade-in{animation:fi 0.4s ease forwards;}
+  @keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);}
+  .modal.show{display:flex;animation:fadeIn 0.3s;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal-box{animation:su 0.3s;max-height:90vh;overflow-y:auto;}
+  @keyframes su{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center bebas text-sm" style="background:var(--rojo)">IH</div>
+      <div class="hidden sm:block"><div class="bebas text-xl leading-none" style="color:var(--amarillo)">INTRAMUROS</div><div class="inter text-xs text-white/30">HUMBOLDT 2026</div></div>
+    </a>
+    <div class="hidden lg:flex items-center gap-7">
+      <a href="index.html" class="nav-link">INICIO</a>
+      <a href="equipos.html" class="nav-link active">EQUIPOS</a>
+      <div class="dropdown"><a class="nav-link cursor-pointer">TORNEO ▾</a>
+        <div class="dropdown-menu">
+          <a href="index.html#posiciones" class="dropdown-item">Tabla de Posiciones</a>
+          <a href="index.html#resultados" class="dropdown-item">Resultados</a>
+          <a href="index.html#goleadores" class="dropdown-item">Goleadores</a>
+          <a href="index.html#calendario" class="dropdown-item">Calendario</a>
+        </div>
+      </div>
+      <a href="index.html#avisos" class="nav-link">AVISOS</a>
+    </div>
+    <div class="flex items-center gap-3" id="navUser">
+      <button onclick="openModal('modalLogin')" class="btn-red px-5 py-2 rounded-xl inter text-sm font-semibold">Ingresar</button>
+    </div>
+    <button class="lg:hidden text-white text-2xl" onclick="document.getElementById('mobMenu').classList.toggle('hidden')">☰</button>
+  </div>
+  <div id="mobMenu" class="hidden lg:hidden border-t border-white/10 px-6 py-4 space-y-2" style="background:rgba(13,13,13,0.98)">
+    <a href="index.html" class="block text-white/70 hover:text-white py-2 font-semibold">INICIO</a>
+    <a href="equipos.html" class="block text-white py-2 font-semibold" style="color:var(--amarillo)">EQUIPOS</a>
+    <a href="index.html#posiciones" class="block text-white/70 hover:text-white py-2 font-semibold">POSICIONES</a>
+    <a href="index.html#avisos" class="block text-white/70 hover:text-white py-2 font-semibold">AVISOS</a>
+  </div>
+</nav>
+
+<div class="pt-28 pb-16 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <div class="bebas text-6xl text-white mb-1">EQUIPOS</div>
+      <p class="inter text-white/40 text-sm">Todos los equipos participantes del torneo</p>
+    </div>
+    <!-- Search + Filters -->
+    <div class="flex flex-wrap gap-4 mb-5">
+      <div class="relative flex-1 min-w-52">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm">🔍</span>
+        <input type="text" id="searchInp" class="inp pl-10" placeholder="Buscar equipo...">
+      </div>
+      <div class="flex flex-wrap gap-2" id="filtros">
+        <button class="filter-btn active" onclick="filtrar('all',this)">TODOS</button>
+      </div>
+    </div>
+    <div class="inter text-xs text-white/30 mb-5" id="countTxt"></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="grid">
+      <div class="col-span-full text-center py-20 inter text-white/20">Cargando equipos...</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal items-center justify-center p-4" id="modalLogin">
+  <div class="modal-box rounded-2xl p-8 w-full max-w-md relative" style="background:#161616;border:1px solid rgba(220,38,38,0.2)">
+    <button onclick="closeModal('modalLogin')" class="absolute top-4 right-4 text-white/30 hover:text-white text-2xl">×</button>
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center bebas text-xl mx-auto mb-3" style="background:var(--rojo)">IH</div>
+      <div class="bebas text-2xl">ACCESO AL SISTEMA</div>
+    </div>
+    <div class="space-y-4">
+      <div><label class="inter text-xs text-white/40 block mb-1">USUARIO</label><input id="lU" class="inp" placeholder="usuario" onkeypress="if(event.key==='Enter')doLogin()"></div>
+      <div><label class="inter text-xs text-white/40 block mb-1">CONTRASEÑA</label><input type="password" id="lP" class="inp" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
+      <div id="lE" class="hidden inter text-sm text-red-400 text-center py-2 rounded-xl" style="background:rgba(220,38,38,0.08)">Credenciales incorrectas</div>
+      <button onclick="doLogin()" class="btn-red w-full py-3 rounded-xl inter font-semibold">INGRESAR</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/equipos.js"></script>
+<script src="js/modules.js"></script>
+<script>
+let allEqs=[], secActiva='all', q='';
+
+function updateNav(){
+  const u=Auth.getCurrentUser(); const el=document.getElementById('navUser');
+  if(u){const b=u.role==='admin'?'badge-admin':'badge-arbitro';const lnk=u.role==='admin'?'admin.html':'arbitro.html';
+  el.innerHTML=`<span class="${b} px-3 py-1 rounded-full inter text-xs font-bold">${u.role==='admin'?'ADMIN':'ÁRBITRO'}</span><a href="${lnk}" class="btn-red px-4 py-2 rounded-xl inter text-sm font-semibold">Panel</a><button onclick="Auth.logout()" class="inter text-sm text-white/30 hover:text-red-400">Salir</button>`;}
+}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);}));
+function doLogin(){
+  const u=Auth.login(document.getElementById('lU').value.trim(),document.getElementById('lP').value.trim());
+  if(u){closeModal('modalLogin');updateNav();window.location.href=u.role==='admin'?'admin.html':'arbitro.html';}
+  else document.getElementById('lE').classList.remove('hidden');
+}
+
+function buildFiltros(){
+  const secs=[...new Set(allEqs.map(e=>e.seccion))];
+  const c=document.getElementById('filtros');
+  c.innerHTML='<button class="filter-btn active" onclick="filtrar(\'all\',this)">TODOS</button>';
+  secs.forEach(s=>{const b=document.createElement('button');b.className='filter-btn';b.textContent=s;b.onclick=()=>filtrar(s,b);c.appendChild(b);});
+}
+
+function filtrar(sec,btn){
+  secActiva=sec;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render(){
+  let f=allEqs;
+  if(secActiva!=='all') f=f.filter(e=>e.seccion===secActiva);
+  if(q) f=f.filter(e=>e.nombre.toLowerCase().includes(q)||e.seccion.toLowerCase().includes(q));
+  document.getElementById('countTxt').textContent=`${f.length} equipo${f.length!==1?'s':''} encontrado${f.length!==1?'s':''}`;
+  const g=document.getElementById('grid');
+  if(!f.length){g.innerHTML='<div class="col-span-full text-center py-20 inter text-white/20">No se encontraron equipos</div>';return;}
+  const accents=['#DC2626','#EF4444','#B91C1C','#FACC15','#F97316','#EF4444','#DC2626','#FACC15'];
+  g.innerHTML=f.map((e,i)=>{
+    const st=Equipos.getStats(e.id); const jc=(e.jugadores||[]).length; const ac=accents[i%accents.length];
+    return `<div class="card fade-in" style="animation-delay:${i*0.04}s" onclick="window.location.href='equipo-detalle.html?id=${e.id}'">
+      <div class="h-28 flex items-center justify-center relative overflow-hidden" style="background:linear-gradient(135deg,${ac}18,${ac}05)">
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,0.01) 12px,rgba(255,255,255,0.01) 24px)"></div>
+        ${e.escudo?`<img src="${e.escudo}" class="w-20 h-20 rounded-full object-cover border-2" style="border-color:${ac}50">`:`<div class="w-20 h-20 rounded-full flex items-center justify-center bebas text-4xl border-2" style="background:${ac}20;border-color:${ac}40;color:${ac}">${e.nombre.charAt(0)}</div>`}
+      </div>
+      <div class="p-5">
+        <div class="inter text-xs tracking-widest mb-1" style="color:${ac}">${e.seccion}</div>
+        <div class="font-bold text-lg text-white mb-1">${e.nombre}</div>
+        <div class="inter text-xs text-white/30 mb-4">${jc} jugador${jc!==1?'es':''}</div>
+        <div class="grid grid-cols-3 gap-2 pt-3 border-t" style="border-color:rgba(255,255,255,0.06)">
+          <div class="text-center"><div class="bebas text-xl text-green-400">${st.ganados}</div><div class="inter text-xs text-white/30">G</div></div>
+          <div class="text-center"><div class="bebas text-xl text-yellow-400">${st.empatados}</div><div class="inter text-xs text-white/30">E</div></div>
+          <div class="text-center"><div class="bebas text-xl text-red-400">${st.perdidos}</div><div class="inter text-xs text-white/30">P</div></div>
+        </div>
+        <div class="mt-3 flex justify-between items-center">
+          <div class="inter text-xs text-white/30">${st.puntos} pts</div>
+          <div class="inter text-xs px-2 py-0.5 rounded-full" style="background:${ac}18;color:${ac}">${st.golesFavor} goles</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('searchInp').addEventListener('input',function(){q=this.value.toLowerCase().trim();render();});
+allEqs=Equipos.getAll();buildFiltros();render();updateNav();
+</script>
+</body>
+</html>

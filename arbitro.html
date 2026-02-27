@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Árbitro · Intramuros Humboldt 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--r:#DC2626;--r3:#B91C1C;--y:#FACC15;--g:#22c55e;--d1:#0D0D0D;--d2:#111;--d3:#161616;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow Condensed',sans-serif;background:var(--d2);color:#fff;overflow-x:hidden;}
+  .bb{font-family:'Bebas Neue',cursive;} .it{font-family:'Inter',sans-serif;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#111;}::-webkit-scrollbar-thumb{background:var(--r);}
+  .nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,13,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.05);}
+  .crd{background:var(--d3);border:1px solid rgba(255,255,255,0.07);border-radius:16px;}
+  .inp{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:10px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:13px;width:100%;transition:all 0.2s;}
+  .inp:focus{outline:none;border-color:var(--r);}
+  .inp::placeholder{color:rgba(255,255,255,0.25);}
+  select.inp option{background:#1a1a1a;}
+  label{font-size:10px;letter-spacing:0.08em;color:rgba(255,255,255,0.35);font-family:'Inter',sans-serif;display:block;margin-bottom:4px;}
+  .btn-r{background:linear-gradient(135deg,var(--r),var(--r3));color:#fff;font-weight:700;cursor:pointer;border:none;transition:all 0.3s;}
+  .btn-r:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(220,38,38,0.35);}
+  .btn-g{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-weight:700;cursor:pointer;border:none;transition:all 0.3s;}
+  .btn-g:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,197,94,0.3);}
+  .btn-y{background:linear-gradient(135deg,var(--y),#FDE047);color:#000;font-weight:700;cursor:pointer;border:none;transition:all 0.3s;}
+  .btn-o{background:transparent;border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.55);cursor:pointer;transition:all 0.2s;}
+  .btn-o:hover{border-color:rgba(255,255,255,0.3);color:#fff;}
+  .btn-d{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.22);color:var(--r);cursor:pointer;transition:all 0.2s;}
+  .btn-d:hover{background:rgba(220,38,38,0.2);}
+  /* SCOREBOARD */
+  .scoreboard{background:linear-gradient(135deg,#1a0505,#12122e);border:1px solid rgba(220,38,38,0.18);border-radius:20px;position:relative;overflow:hidden;}
+  .scoreboard::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(255,255,255,0.01) 40px,rgba(255,255,255,0.01) 80px);}
+  /* CLOCK */
+  .clock-wrap{text-align:center;padding:20px;}
+  .clock-display{font-family:'Bebas Neue',cursive;font-size:clamp(60px,12vw,96px);letter-spacing:4px;line-height:1;color:var(--y);text-shadow:0 0 30px rgba(250,204,21,0.3);}
+  .clock-display.running{text-shadow:0 0 30px rgba(250,204,21,0.5);}
+  .clock-period{font-family:'Bebas Neue',cursive;font-size:22px;color:rgba(255,255,255,0.5);letter-spacing:3px;}
+  .clock-minuto{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.35);margin-top:4px;}
+  /* PROGRESS BAR */
+  .progress-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--r),var(--y));border-radius:2px;transition:width 1s linear;}
+  /* EVENT BUTTONS */
+  .ev-btn{border:1px solid;border-radius:14px;padding:16px;transition:all 0.3s;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(0,0,0,0.2);}
+  .ev-btn:hover{transform:scale(1.04);}
+  .ev-btn.sel{transform:scale(1.06);filter:brightness(1.25);}
+  .ev-gol{border-color:rgba(34,197,94,0.25);}
+  .ev-gol:hover,.ev-gol.sel{border-color:rgba(34,197,94,0.7);background:rgba(34,197,94,0.1);box-shadow:0 0 20px rgba(34,197,94,0.15);}
+  .ev-am{border-color:rgba(234,179,8,0.25);}
+  .ev-am:hover,.ev-am.sel{border-color:rgba(234,179,8,0.7);background:rgba(234,179,8,0.1);box-shadow:0 0 20px rgba(234,179,8,0.15);}
+  .ev-ro{border-color:rgba(220,38,38,0.25);}
+  .ev-ro:hover,.ev-ro.sel{border-color:rgba(220,38,38,0.7);background:rgba(220,38,38,0.1);box-shadow:0 0 20px rgba(220,38,38,0.15);}
+  .ev-fa{border-color:rgba(249,115,22,0.25);}
+  .ev-fa:hover,.ev-fa.sel{border-color:rgba(249,115,22,0.7);background:rgba(249,115,22,0.1);}
+  /* PLAYER CARD */
+  .pl-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:all 0.2s;background:rgba(255,255,255,0.025);}
+  .pl-card:hover,.pl-card.sel{background:rgba(220,38,38,0.1);border-color:rgba(220,38,38,0.25);}
+  /* EVENT LOG */
+  .ev-log{border-left:3px solid;padding:10px 14px;border-radius:0 10px 10px 0;background:rgba(255,255,255,0.025);margin-bottom:8px;transition:all 0.2s;}
+  .ev-log:hover{background:rgba(255,255,255,0.04);}
+  .el-gol{border-color:var(--g);} .el-am{border-color:#EAB308;} .el-ro{border-color:var(--r);} .el-fa{border-color:#F97316;}
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:12px 20px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;transform:translateX(130%);transition:transform 0.3s;}
+  .toast.show{transform:translateX(0);}
+  .t-ok{background:rgba(34,197,94,0.14);border:1px solid rgba(34,197,94,0.3);color:var(--g);}
+  .t-er{background:rgba(220,38,38,0.14);border:1px solid rgba(220,38,38,0.3);color:var(--r);}
+  /* PULSE */
+  @keyframes plsr{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0.5)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+  .pulse{animation:plsr 1.5s infinite;}
+  @keyframes plsg{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+  .pulse-g{animation:plsg 1.5s infinite;}
+  /* TIEMPO EXTRA */
+  .extra-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(250,204,21,0.12);border:1px solid rgba(250,204,21,0.25);color:var(--y);font-family:'Bebas Neue',cursive;font-size:16px;padding:4px 12px;border-radius:20px;}
+  /* MODAL */
+  .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);}
+  .modal.show{display:flex;animation:fi 0.3s;}
+  @keyframes fi{from{opacity:0}to{opacity:1}}
+  @keyframes su{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+  .mbox{animation:su 0.3s;max-height:92vh;overflow-y:auto;}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center bb text-sm" style="background:var(--r)">IH</div>
+      <div><div class="bb text-xl leading-none" style="color:var(--y)">PANEL ÁRBITRO</div><div class="it text-xs text-white/30" id="arbNameTop">Cargando...</div></div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div id="connStatus" class="flex items-center gap-2 it text-xs text-white/40"></div>
+      <a href="index.html" class="btn-o px-3 py-2 rounded-xl it text-xs">🌐</a>
+      <button onclick="Auth.logout()" class="btn-o px-3 py-2 rounded-xl it text-xs">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<div class="pt-24 pb-12 px-4 md:px-6">
+<div class="max-w-7xl mx-auto">
+
+<!-- SELECTOR DE PARTIDO -->
+<div class="crd p-5 mb-5">
+  <div class="bb text-lg mb-3" style="color:var(--y)">MIS PARTIDOS ASIGNADOS</div>
+  <div class="flex gap-3 flex-wrap items-end">
+    <div class="flex-1 min-w-64">
+      <label>SELECCIONAR PARTIDO</label>
+      <select id="selPt" class="inp" onchange="seleccionarPartido(this.value)">
+        <option value="">— Seleccionar —</option>
+      </select>
+    </div>
+    <button onclick="recargar()" class="btn-o px-4 py-3 rounded-xl it text-sm">🔄 Recargar</button>
+  </div>
+  <div id="arbRol" class="hidden mt-3 it text-xs text-white/40"></div>
+</div>
+
+<!-- SIN PARTIDO SELECCIONADO -->
+<div id="emptyPanel" class="text-center py-28">
+  <div class="text-6xl mb-4">🧑‍⚖️</div>
+  <div class="bb text-3xl text-white/30 mb-2">ÁRBITRO · VAR</div>
+  <p class="it text-white/20 text-sm">Selecciona un partido para comenzar a arbitrar</p>
+</div>
+
+<!-- PANEL PRINCIPAL -->
+<div id="mainPanel" class="hidden">
+
+  <!-- SCOREBOARD + CLOCK -->
+  <div class="scoreboard p-6 mb-5 relative z-10">
+    <!-- Score header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex-1 text-right pr-4">
+        <div class="bb text-2xl text-white" id="scLocalNom">Local</div>
+        <div class="it text-xs text-white/35" id="scLocalSec"></div>
+      </div>
+      <div class="flex-shrink-0 text-center">
+        <div class="bb leading-none" style="font-size:64px;color:var(--y)">
+          <span id="scGL">0</span><span style="color:rgba(255,255,255,0.2)">-</span><span id="scGV">0</span>
+        </div>
+      </div>
+      <div class="flex-1 text-left pl-4">
+        <div class="bb text-2xl text-white" id="scVisitNom">Visitante</div>
+        <div class="it text-xs text-white/35" id="scVisitSec"></div>
+      </div>
+    </div>
+
+    <!-- CLOCK -->
+    <div class="clock-wrap">
+      <div class="clock-display" id="clockDisplay">00:00</div>
+      <div class="clock-period" id="clockPeriod">SIN INICIAR</div>
+      <div class="clock-minuto" id="clockMinuto">Minuto: 0</div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar mx-8 mb-4">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <!-- Extra time badges -->
+    <div class="flex justify-center gap-3 flex-wrap mb-4" id="extraBadges"></div>
+
+    <!-- Match info -->
+    <div class="it text-xs text-white/30 text-center mb-4" id="matchInfo"></div>
+
+    <!-- CONTROLES DEL CRONÓMETRO -->
+    <div id="timerControls" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <!-- Dinámico según estado -->
+    </div>
+
+    <!-- Config de tiempos (solo antes de iniciar) -->
+    <div id="timeCfgPanel" class="mt-4 p-4 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07)">
+      <div class="bb text-sm mb-3 text-white/50">CONFIGURAR DURACIÓN</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label>1ER TIEMPO (min)</label><input type="number" id="cfgDur1" class="inp" value="30" min="1" max="90"></div>
+        <div><label>2DO TIEMPO (min)</label><input type="number" id="cfgDur2" class="inp" value="30" min="1" max="90"></div>
+      </div>
+    </div>
+
+    <!-- Panel de tiempo extra -->
+    <div id="extraPanel" class="hidden mt-4 p-4 rounded-xl" style="background:rgba(250,204,21,0.05);border:1px solid rgba(250,204,21,0.15)">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="bb text-base" style="color:var(--y)">AGREGAR TIEMPO EXTRA:</div>
+        <div class="flex gap-2">
+          <button onclick="addExtra(1)" class="btn-y px-3 py-1 rounded-xl bb text-base">+1 min</button>
+          <button onclick="addExtra(2)" class="btn-y px-3 py-1 rounded-xl bb text-base">+2 min</button>
+          <button onclick="addExtra(3)" class="btn-y px-3 py-1 rounded-xl bb text-base">+3 min</button>
+          <button onclick="addExtra(5)" class="btn-y px-3 py-1 rounded-xl bb text-base">+5 min</button>
+        </div>
+        <div id="extraAcumLabel" class="it text-xs text-white/40"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTRAR EVENTO + HISTORIAL -->
+  <div class="grid lg:grid-cols-2 gap-5">
+
+    <!-- REGISTRAR EVENTO -->
+    <div class="crd p-5">
+      <div class="bb text-xl mb-4" style="color:var(--y)">REGISTRAR EVENTO</div>
+
+      <!-- Tipo de evento -->
+      <div class="mb-4">
+        <label class="mb-2 block">TIPO DE EVENTO</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="ev-btn ev-gol" onclick="setTipo('gol',this)"><span class="text-3xl">⚽</span><span class="bb text-lg" style="color:var(--g)">GOL</span></button>
+          <button class="ev-btn ev-am" onclick="setTipo('amarilla',this)"><span class="text-3xl">🟨</span><span class="bb text-lg text-yellow-400">AMARILLA</span></button>
+          <button class="ev-btn ev-ro" onclick="setTipo('roja',this)"><span class="text-3xl">🟥</span><span class="bb text-lg" style="color:var(--r)">ROJA</span></button>
+          <button class="ev-btn ev-fa" onclick="setTipo('falta',this)"><span class="text-3xl">⚠️</span><span class="bb text-lg text-orange-400">FALTA</span></button>
+        </div>
+      </div>
+
+      <!-- Equipo -->
+      <div class="mb-4">
+        <label>EQUIPO</label>
+        <select id="evEq" class="inp" onchange="cargarJugSel()">
+          <option value="">Seleccionar equipo...</option>
+        </select>
+      </div>
+
+      <!-- Selección visual de jugador -->
+      <div class="mb-4">
+        <label>JUGADOR</label>
+        <div id="jugSel" class="rounded-xl border overflow-hidden max-h-52 overflow-y-auto" style="border-color:rgba(255,255,255,0.09);background:rgba(0,0,0,0.2)">
+          <div class="p-4 it text-sm text-white/25 text-center">Selecciona un equipo</div>
+        </div>
+        <input type="hidden" id="evJugNum">
+      </div>
+
+      <!-- Minuto y hora real -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label>MINUTO (auto)</label>
+          <div class="inp text-white/60 it" id="evMinDisplay" style="background:rgba(255,255,255,0.04);cursor:default">0'</div>
+          <input type="hidden" id="evMin">
+        </div>
+        <div>
+          <label>HORA REAL (auto)</label>
+          <div class="inp text-white/50 it text-xs" id="evHoraDisplay" style="background:rgba(255,255,255,0.04);cursor:default;font-size:11px">--:--:--</div>
+          <input type="hidden" id="evHora">
+        </div>
+      </div>
+
+      <!-- Periodo -->
+      <div class="mb-4">
+        <label>PERIODO</label>
+        <div id="evPeriodoDisplay" class="inp it text-white/55" style="background:rgba(255,255,255,0.04);cursor:default">—</div>
+        <input type="hidden" id="evPeriodo">
+      </div>
+
+      <!-- Justificación -->
+      <div class="mb-4">
+        <label>JUSTIFICACIÓN / DESCRIPCIÓN</label>
+        <textarea id="evJust" class="inp" rows="2" placeholder="Descripción del evento..."></textarea>
+      </div>
+
+      <div id="evErr" class="hidden it text-sm text-red-400 text-center py-2 rounded-xl mb-3" style="background:rgba(220,38,38,0.07)"></div>
+      <button onclick="registrarEvento()" class="btn-r w-full py-3 rounded-xl bb text-xl">REGISTRAR EVENTO</button>
+    </div>
+
+    <!-- HISTORIAL DEL PARTIDO -->
+    <div class="crd p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div class="bb text-xl" style="color:var(--y)">HISTORIAL</div>
+        <span class="it text-xs text-white/30" id="evCount">0 eventos</span>
+      </div>
+      <div id="histList" class="max-h-[480px] overflow-y-auto">
+        <div class="text-center py-16 it text-sm text-white/20">Sin eventos</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /mainPanel -->
+</div><!-- /container -->
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/partido-timer.js"></script>
+<script>
+if(!Auth.requireArbitro()) throw '';
+const USER = Auth.getCurrentUser();
+document.getElementById('arbNameTop').textContent = USER?.name || 'Árbitro';
+
+// ── ESTADO ──────────────────────────────────────────────────
+let _pts=[], _eq=[], _jug=[], _ev=[];
+let currentPid = null;
+let currentTipo = null;
+let currentJugNum = null;
+let timer = null;
+
+// ── TOAST ────────────────────────────────────────────────────
+function toast(msg, type='ok'){const t=document.getElementById('toast');t.className=`toast t-${type}`;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+
+// ── CONNECTION ────────────────────────────────────────────────
+(async()=>{
+  const s=await DB.ping();
+  document.getElementById('connStatus').innerHTML=`<div style="width:8px;height:8px;border-radius:50%;background:${s.connected?'#22c55e':'#FACC15'}"></div><span>${s.connected?'Conectado':'Offline'}</span>`;
+})();
+
+// ── CARGAR DATOS ──────────────────────────────────────────────
+async function recargar(){
+  [_pts,_eq,_jug,_ev]=await Promise.all([
+    DB.get('getPartidos'),DB.get('getEquipos'),DB.get('getJugadores'),DB.get('getEventos'),
+  ]);
+  _pts=_pts||[];_eq=_eq||[];_jug=_jug||[];_ev=_ev||[];
+  llenarSelectPartidos();
+  if(currentPid) seleccionarPartido(currentPid, true);
+}
+recargar();
+
+function llenarSelectPartidos(){
+  const sel=document.getElementById('selPt');
+  const mis=_pts.filter(p=>p.arbitro_principal_id===USER.id||p.arbitro_var_id===USER.id);
+  const finalizados=mis.filter(p=>p.estado==='finalizado');
+  const activos=mis.filter(p=>p.estado!=='finalizado');
+  sel.innerHTML='<option value="">— Seleccionar —</option>';
+  const ico={programado:'⏳',primer_tiempo:'🔴',descanso:'⏸',segundo_tiempo:'🔴',tiempo_extra_1:'🔴',tiempo_extra_2:'🔴',finalizado:'✅'};
+  const estados={programado:'Programado',primer_tiempo:'1er Tiempo',descanso:'Descanso',segundo_tiempo:'2do Tiempo',tiempo_extra_1:'T.Extra',tiempo_extra_2:'T.Extra 2',finalizado:'Finalizado'};
+  if(!mis.length){sel.innerHTML='<option value="">Sin partidos asignados</option>';return;}
+  activos.forEach(p=>{
+    const eL=_eq.find(e=>e.id===p.equipo_local_id); const eV=_eq.find(e=>e.id===p.equipo_visitante_id);
+    const o=document.createElement('option');o.value=p.id;
+    o.textContent=`${ico[p.estado]||''} ${eL?.nombre||'?'} vs ${eV?.nombre||'?'} · ${p.fecha||''}`;
+    sel.appendChild(o);
+  });
+  if(finalizados.length){
+    const sep=document.createElement('option');sep.disabled=true;sep.textContent='─── Finalizados ───';sel.appendChild(sep);
+    finalizados.forEach(p=>{
+      const eL=_eq.find(e=>e.id===p.equipo_local_id); const eV=_eq.find(e=>e.id===p.equipo_visitante_id);
+      const o=document.createElement('option');o.value=p.id;
+      o.textContent=`✅ ${eL?.nombre||'?'} vs ${eV?.nombre||'?'} · ${p.fecha||''}`;
+      sel.appendChild(o);
+    });
+  }
+}
+
+function seleccionarPartido(id, quiet=false){
+  if(!id){
+    currentPid=null;
+    document.getElementById('mainPanel').classList.add('hidden');
+    document.getElementById('emptyPanel').classList.remove('hidden');
+    if(timer){timer.destroy();timer=null;}
+    return;
+  }
+  currentPid=id;
+  document.getElementById('selPt').value=id;
+  document.getElementById('mainPanel').classList.remove('hidden');
+  document.getElementById('emptyPanel').classList.add('hidden');
+  const p=_pts.find(x=>x.id===id);if(!p) return;
+
+  // Mostrar rol del árbitro en este partido
+  const rolEl=document.getElementById('arbRol');
+  if(p.arbitro_principal_id===USER.id){rolEl.textContent='Tu rol: ÁRBITRO PRINCIPAL';rolEl.classList.remove('hidden');}
+  else if(p.arbitro_var_id===USER.id){rolEl.textContent='Tu rol: VAR';rolEl.classList.remove('hidden');}
+
+  // Inicializar timer
+  if(timer) timer.destroy();
+  timer=new PartidoTimer(onTick, onStateChange);
+  timer.setDuraciones(p.duracion_primer_tiempo||30, p.duracion_segundo_tiempo||30);
+  timer.cargarPartido(p);
+
+  // Cargar config de tiempos
+  document.getElementById('cfgDur1').value=p.duracion_primer_tiempo||30;
+  document.getElementById('cfgDur2').value=p.duracion_segundo_tiempo||30;
+
+  actualizarScoreboard();
+  llenarEqSelect();
+  cargarHistorial();
+  renderTimerControls();
+  if(!quiet) toast('Partido cargado ✓');
+}
+
+// ── SCOREBOARD ────────────────────────────────────────────────
+function actualizarScoreboard(){
+  const p=_pts.find(x=>x.id===currentPid);if(!p) return;
+  const eL=_eq.find(e=>e.id===p.equipo_local_id)||{};
+  const eV=_eq.find(e=>e.id===p.equipo_visitante_id)||{};
+  document.getElementById('scLocalNom').textContent=eL.nombre||'Local';
+  document.getElementById('scLocalSec').textContent=eL.seccion||'';
+  document.getElementById('scVisitNom').textContent=eV.nombre||'Visitante';
+  document.getElementById('scVisitSec').textContent=eV.seccion||'';
+  document.getElementById('scGL').textContent=p.goles_local||0;
+  document.getElementById('scGV').textContent=p.goles_visitante||0;
+  document.getElementById('matchInfo').textContent=`${p.fecha||''} ${p.hora?'· '+p.hora:''} ${p.cancha?'· '+p.cancha:''}`;
+}
+
+// ── TIMER CALLBACKS ───────────────────────────────────────────
+function onTick(tick){
+  const cd=document.getElementById('clockDisplay');
+  cd.textContent=tick.display;
+  cd.className='clock-display'+(tick.running?' running':'');
+  document.getElementById('clockPeriod').textContent=tick.estadoLabel.toUpperCase();
+  document.getElementById('clockMinuto').textContent=`Minuto del partido: ${tick.minutoPartido}'`;
+
+  // Progress bar
+  if(tick.limite>0){
+    const pct=Math.min(100,(tick.elapsed/tick.limite)*100);
+    document.getElementById('progressFill').style.width=pct+'%';
+  }
+
+  // Actualizar campos del evento automáticamente
+  document.getElementById('evMin').value=tick.minutoPartido;
+  document.getElementById('evMinDisplay').textContent=tick.minutoPartido+"'";
+  const ahora=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('evHora').value=new Date().toISOString();
+  document.getElementById('evHoraDisplay').textContent=ahora;
+  document.getElementById('evPeriodo').value=tick.estado;
+  document.getElementById('evPeriodoDisplay').textContent=tick.estadoLabel;
+
+  // Extra badges
+  const eb=document.getElementById('extraBadges'); eb.innerHTML='';
+  if(tick.extraAcum1>0) eb.innerHTML+=`<div class="extra-badge">+${tick.extraAcum1}' T.Extra 1er</div>`;
+  if(tick.extraAcum2>0) eb.innerHTML+=`<div class="extra-badge">+${tick.extraAcum2}' T.Extra 2do</div>`;
+  document.getElementById('extraAcumLabel').textContent=`Acumulado: +${tick.extraAcum1||0}' / +${tick.extraAcum2||0}'`;
+}
+
+function onStateChange(estado){
+  renderTimerControls();
+  // Mostrar/ocultar panels
+  const jugando=['primer_tiempo','segundo_tiempo','tiempo_extra_1','tiempo_extra_2'].includes(estado);
+  document.getElementById('extraPanel').classList.toggle('hidden',!jugando);
+  document.getElementById('timeCfgPanel').classList.toggle('hidden', estado!=='programado');
+  // Recargar score si el estado cambió
+  recargarScore();
+}
+
+async function recargarScore(){
+  const pts=await DB.get('getPartidos');
+  _pts=pts||_pts;
+  const p=_pts.find(x=>x.id===currentPid);
+  if(p){
+    document.getElementById('scGL').textContent=p.goles_local||0;
+    document.getElementById('scGV').textContent=p.goles_visitante||0;
+  }
+}
+
+// ── CONTROLES DEL CRONÓMETRO ─────────────────────────────────
+function renderTimerControls(){
+  if(!timer) return;
+  const est=timer.estado;
+  const el=document.getElementById('timerControls');
+  const finalizado=est==='finalizado';
+
+  const btnClass=(cls,txt,fn,disabled=false)=>
+    `<button onclick="${fn}" ${disabled?'disabled':''} class="${cls} py-3 rounded-xl bb text-base w-full" ${disabled?'style="opacity:0.4;cursor:not-allowed"':''}>${txt}</button>`;
+
+  let html='';
+  if(est==='programado'){
+    // Guardar duraciones antes de iniciar
+    html+=btnClass('btn-g','▶ INICIAR 1ER TIEMPO','iniciarPartido()');
+    html+=btnClass('btn-o','GUARDAR CONFIG','guardarConfig()');
+  }else if(est==='primer_tiempo'){
+    html+=btnClass('btn-y','⏸ IR A DESCANSO','irDescanso()');
+    html+=btnClass('btn-o','⏸ PAUSAR','pausarCron()');
+  }else if(est==='descanso'){
+    html+=btnClass('btn-g','▶ INICIAR 2DO TIEMPO','iniciar2doPt()');
+    html+=btnClass('btn-o','','',true);
+  }else if(est==='segundo_tiempo'){
+    html+=btnClass('btn-d','■ FINALIZAR PARTIDO','finalizarPartido()');
+    html+=btnClass('btn-o','⏸ PAUSAR','pausarCron()');
+  }else if(finalizado){
+    html+=`<div class="col-span-2 text-center it text-sm text-white/30 py-3">Partido finalizado</div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+async function iniciarPartido(){
+  // Guardar config de duración primero
+  const d1=parseInt(document.getElementById('cfgDur1').value)||30;
+  const d2=parseInt(document.getElementById('cfgDur2').value)||30;
+  timer.setDuraciones(d1,d2);
+  await DB.post('updatePartido',{id:currentPid,data:{duracion_primer_tiempo:d1,duracion_segundo_tiempo:d2}});
+  await timer.iniciarPrimerTiempo();
+  toast('¡1er tiempo iniciado!');
+}
+
+async function guardarConfig(){
+  const d1=parseInt(document.getElementById('cfgDur1').value)||30;
+  const d2=parseInt(document.getElementById('cfgDur2').value)||30;
+  timer.setDuraciones(d1,d2);
+  await DB.post('updatePartido',{id:currentPid,data:{duracion_primer_tiempo:d1,duracion_segundo_tiempo:d2}});
+  toast('Configuración guardada');
+}
+
+function pausarCron(){timer._pausarCronometro?.();toast('Cronómetro pausado');}
+
+async function irDescanso(){
+  await timer.pausar_irDescanso();
+  toast('Descanso iniciado ⏸');
+}
+
+async function iniciar2doPt(){
+  await timer.iniciarSegundoTiempo();
+  toast('¡2do tiempo iniciado!');
+}
+
+async function finalizarPartido(){
+  if(!confirm('¿Finalizar el partido definitivamente?')) return;
+  await timer.finalizarPartido();
+  toast('Partido finalizado ✅');
+  await recargar();
+}
+
+async function addExtra(min){
+  await timer.agregarTiempoExtra(min);
+  toast(`+${min} min de tiempo extra`);
+}
+
+// ── EQUIPO / JUGADOR SELECT ───────────────────────────────────
+function llenarEqSelect(){
+  const p=_pts.find(x=>x.id===currentPid);if(!p) return;
+  const eL=_eq.find(e=>e.id===p.equipo_local_id);
+  const eV=_eq.find(e=>e.id===p.equipo_visitante_id);
+  const sel=document.getElementById('evEq');
+  sel.innerHTML='<option value="">Seleccionar...</option>';
+  if(eL){const o=document.createElement('option');o.value=eL.id;o.textContent=eL.nombre+' (Local)';sel.appendChild(o);}
+  if(eV){const o=document.createElement('option');o.value=eV.id;o.textContent=eV.nombre+' (Visitante)';sel.appendChild(o);}
+}
+
+function cargarJugSel(){
+  const eqId=document.getElementById('evEq').value;
+  currentJugNum=null;document.getElementById('evJugNum').value='';
+  const c=document.getElementById('jugSel');
+  if(!eqId){c.innerHTML='<div class="p-4 it text-sm text-white/25 text-center">Selecciona un equipo</div>';return;}
+  const jugs=_jug.filter(j=>j.equipo_id===eqId);
+  if(!jugs.length){c.innerHTML='<div class="p-4 it text-sm text-white/25 text-center">Sin jugadores</div>';return;}
+  const evs=_ev.filter(e=>e.partido_id===currentPid);
+  c.innerHTML=jugs.map(j=>{
+    const susp=Stats.suspendido(eqId,j.numero,_ev);
+    const stJ=Stats.jugador(eqId,j.numero,evs);
+    return `<div class="pl-card ${susp?'opacity-40':''}" onclick="selJug('${j.numero}',this)">
+      <div style="min-width:36px;width:36px;height:36px;border-radius:50%;background:rgba(220,38,38,0.12);color:var(--y);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:18px;flex-shrink:0">${j.numero}</div>
+      ${j.foto_b64?`<img src="${j.foto_b64}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`:''}
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold text-sm truncate">${j.nombre}${susp?' <span style="color:var(--r);font-size:10px">SUSP.</span>':''}</div>
+        <div class="it text-xs text-white/35">${j.posicion||''}</div>
+      </div>
+      <div class="flex gap-1 flex-shrink-0 it text-xs text-white/40">
+        ${stJ.goles>0?`<span>⚽${stJ.goles}</span>`:''}
+        ${stJ.amarillas>0?`<span>🟨${stJ.amarillas}</span>`:''}
+        ${stJ.rojas>0?`<span>🟥${stJ.rojas}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selJug(num,el){
+  document.querySelectorAll('.pl-card').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');currentJugNum=num;document.getElementById('evJugNum').value=num;
+}
+
+function setTipo(tipo,btn){
+  document.querySelectorAll('.ev-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');currentTipo=tipo;
+}
+
+// ── REGISTRAR EVENTO ─────────────────────────────────────────
+async function registrarEvento(){
+  const errEl=document.getElementById('evErr');errEl.classList.add('hidden');
+  if(!currentPid){errEl.textContent='Selecciona un partido';errEl.classList.remove('hidden');return;}
+  if(!currentTipo){errEl.textContent='Selecciona el tipo de evento';errEl.classList.remove('hidden');return;}
+  const eqId=document.getElementById('evEq').value;
+  if(!eqId){errEl.textContent='Selecciona el equipo';errEl.classList.remove('hidden');return;}
+  if(!currentJugNum){errEl.textContent='Selecciona el jugador';errEl.classList.remove('hidden');return;}
+
+  const minuto=document.getElementById('evMin').value||timer?.minutoPartido||0;
+  const tsReal=document.getElementById('evHora').value||new Date().toISOString();
+  const periodo=document.getElementById('evPeriodo').value||timer?.estado||'';
+  const just=document.getElementById('evJust').value.trim();
+
+  const evData={
+    partido_id:currentPid,
+    equipo_id:eqId,
+    tipo:currentTipo,
+    numero_jugador:currentJugNum,
+    minuto_partido:String(minuto),
+    timestamp_real:tsReal,
+    periodo,
+    justificacion:just,
+    registrado_por:USER.username,
+  };
+
+  const r=await DB.post('addEvento',{data:evData});
+  if(!r.ok){errEl.textContent=r.error||'Error al registrar';errEl.classList.remove('hidden');return;}
+
+  // Actualizar estado local
+  _ev.push({...evData,id:r.id});
+  const icons={gol:'⚽ GOL',amarilla:'🟨 AMARILLA',roja:'🟥 ROJA',falta:'⚠️ FALTA'};
+  toast(`${icons[currentTipo]} · #${currentJugNum} · ${minuto}'`);
+
+  // Reset campos
+  document.getElementById('evJust').value='';
+  document.getElementById('evJugNum').value='';
+  document.querySelectorAll('.pl-card').forEach(e=>e.classList.remove('sel'));
+  currentJugNum=null;
+
+  // Recargar score y historial
+  await recargarScore();
+  cargarHistorial();
+  cargarJugSel(); // actualizar stats de jugadores
+}
+
+// ── HISTORIAL ────────────────────────────────────────────────
+function cargarHistorial(){
+  const evs=_ev.filter(e=>e.partido_id===currentPid);
+  document.getElementById('evCount').textContent=evs.length+' evento'+(evs.length!==1?'s':'');
+  const c=document.getElementById('histList');
+  if(!evs.length){c.innerHTML='<div class="text-center py-14 it text-sm text-white/20">Sin eventos</div>';return;}
+  const ico={gol:'⚽',amarilla:'🟨',roja:'🟥',falta:'⚠️'};
+  const lbl={gol:'Gol',amarilla:'Tarjeta Amarilla',roja:'Tarjeta Roja',falta:'Falta'};
+  const cls={gol:'el-gol',amarilla:'el-am',roja:'el-ro',falta:'el-fa'};
+  const periodLabels={programado:'Antes de inicio',primer_tiempo:'1er Tiempo',descanso:'Descanso',segundo_tiempo:'2do Tiempo',tiempo_extra_1:'T.Extra 1',tiempo_extra_2:'T.Extra 2'};
+
+  c.innerHTML=[...evs].reverse().map(ev=>{
+    const eq=_eq.find(e=>e.id===ev.equipo_id)||{};
+    const jg=_jug.find(j=>j.equipo_id===ev.equipo_id&&String(j.numero)===String(ev.numero_jugador))||{};
+    const horaReal=ev.timestamp_real?new Date(ev.timestamp_real).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+    return `<div class="ev-log ${cls[ev.tipo]||''}">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2 flex-1">
+          <span class="text-lg flex-shrink-0">${ico[ev.tipo]||'📋'}</span>
+          <div>
+            <div class="font-semibold text-sm">${lbl[ev.tipo]||ev.tipo} · #${ev.numero_jugador} ${jg.nombre||''}</div>
+            <div class="it text-xs text-white/40">${eq.nombre||''} · ${periodLabels[ev.periodo]||ev.periodo||''}</div>
+            ${ev.justificacion?`<div class="it text-xs text-white/30 mt-0.5">${ev.justificacion}</div>`:''}
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <div class="bb text-2xl" style="color:var(--y)">${ev.minuto_partido?ev.minuto_partido+"'":''}</div>
+          ${horaReal?`<div class="it text-xs text-white/25">${horaReal}</div>`:''}
+          <button onclick="eliminarEvento('${ev.id}')" class="btn-d px-2 py-0.5 rounded-lg it text-xs mt-1">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function eliminarEvento(id){
+  if(!confirm('¿Eliminar este evento?')) return;
+  await DB.post('deleteEvento',{id});
+  _ev=_ev.filter(e=>e.id!==id);
+  toast('Evento eliminado','er');
+  await recargarScore();
+  cargarHistorial();
+  cargarJugSel();
+}
+</script>
+</body>
+</html>
