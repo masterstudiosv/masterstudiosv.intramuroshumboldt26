@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Galería — Intramuros 2026</title>
+<link rel="icon" href="../logo/logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/public.css"/>
+</head><body>
+<nav id="topnav">
+  <a href="../index.html" class="nav-brand">
+    <div class="nav-logo"><img src="../logo/logo.png" alt="Logo"></div>
+    <div class="nav-brand-text"><div class="brand-top">INTRAMUROS HUMBOLDT</div><div class="brand-sub">Complejo Educativo Alejandro · 2026</div></div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">🏠 Inicio</a>
+    <a class="nav-link" href="partidos.html">⚽ Partidos</a>
+    <a class="nav-link" href="equipos.html">🛡️ Equipos</a>
+    <a class="nav-link" href="posiciones.html">📋 Posiciones</a>
+    <a class="nav-link" href="goleadores.html">🥅 Goleadores</a>
+    <a class="nav-link active" href="galeria.html">📸 Galería</a>
+    <a class="nav-link" href="reglas.html">📖 Reglas</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="mob-btn" onclick="toggleMob()">☰</button>
+  </div>
+</nav>
+<div id="mob-nav">
+  <a class="nav-link" href="../index.html">🏠 Inicio</a>
+  <a class="nav-link" href="partidos.html">⚽ Partidos</a>
+  <a class="nav-link" href="equipos.html">🛡️ Equipos</a>
+  <a class="nav-link" href="posiciones.html">📋 Posiciones</a>
+  <a class="nav-link" href="goleadores.html">🥅 Goleadores</a>
+  <a class="nav-link active" href="galeria.html">📸 Galería</a>
+  <a class="nav-link" href="reglas.html">📖 Reglas</a>
+</div>
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-hero-label">FOTOS DEL TORNEO</div>
+      <div class="page-hero-title">GALERÍA</div>
+      <div class="page-hero-sub">Revive los mejores momentos del Intramuros 2026</div>
+    </div>
+  </div>
+</div>
+<main id="main">
+  <div id="gallery-wrap">
+    <div style="text-align:center;padding:60px;color:var(--g)">
+      <div style="font-size:40px;margin-bottom:12px">📸</div>
+      <div style="font-size:18px;font-weight:700">Cargando galería...</div>
+    </div>
+  </div>
+</main>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column">
+  <button onclick="closeLightbox()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer">✕</button>
+  <button id="lb-prev" onclick="lbNav(-1)" style="position:absolute;left:20px;background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:28px;cursor:pointer;padding:12px 16px;border-radius:6px">‹</button>
+  <button id="lb-next" onclick="lbNav(1)"  style="position:absolute;right:20px;background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:28px;cursor:pointer;padding:12px 16px;border-radius:6px">›</button>
+  <img id="lb-img" style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px"/>
+  <div id="lb-caption" style="color:#fff;text-align:center;margin-top:16px;max-width:600px;font-family:'Inter',sans-serif"></div>
+  <div id="lb-counter" style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px"></div>
+</div>
+
+<div id="site-footer"></div>
+<div id="toast-ct"></div>
+<script src="../js/config.js"></script><script src="../js/sheets.js"></script><script src="../js/public.js"></script>
+<script>
+let _lbFotos = [], _lbIdx = 0;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  setActiveNav();
+  renderFooter();
+  try {
+    await DB.load();
+    renderGaleria();
+  } catch(e) {
+    document.getElementById('gallery-wrap').innerHTML = `
+      <div style="text-align:center;padding:60px;color:var(--g)">
+        <div style="font-size:40px;margin-bottom:12px">📸</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Sin fotos disponibles</div>
+        <div style="font-size:13px">El administrador aún no ha agregado fotos a la galería.</div>
+      </div>`;
+  }
+});
+
+function renderGaleria() {
+  const fotos = DB.getGaleria ? DB.getGaleria() : [];
+  const wrap = document.getElementById('gallery-wrap');
+  if (!fotos.length) {
+    wrap.innerHTML = `
+      <div style="text-align:center;padding:60px;color:var(--g)">
+        <div style="font-size:40px;margin-bottom:12px">📸</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Galería vacía</div>
+        <div style="font-size:13px">El administrador aún no ha agregado fotos.</div>
+      </div>`;
+    return;
+  }
+  _lbFotos = fotos;
+  const destacadas = fotos.filter(f=>f.destacada==='true'||f.destacada===true);
+  const resto = fotos.filter(f=>!(f.destacada==='true'||f.destacada===true));
+
+  let html = '';
+  if (destacadas.length) {
+    html += `<div style="margin-bottom:32px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--y);margin-bottom:16px;letter-spacing:2px">⭐ FOTOS DESTACADAS</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+        ${destacadas.map((f,i) => fotoCard(f, fotos.indexOf(f))).join('')}
+      </div>
+    </div>`;
+  }
+  if (resto.length) {
+    html += `<div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--w);margin-bottom:16px;letter-spacing:2px">📷 TODAS LAS FOTOS</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+        ${resto.map((f,i) => fotoCard(f, fotos.indexOf(f))).join('')}
+      </div>
+    </div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function fotoCard(f, idx) {
+  return `<div class="card" style="overflow:hidden;cursor:pointer;transition:transform 0.2s" onclick="openLightbox(${idx})" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+    <div style="height:180px;background:var(--b4);overflow:hidden;position:relative">
+      <img src="${f.url}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''" onerror="this.parentElement.innerHTML='<div style=text-align:center;padding:60px;color:var(--g)>🖼️</div>'"/>
+      ${f.destacada==='true'||f.destacada===true?'<span style="position:absolute;top:8px;left:8px;background:var(--y);color:#000;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">⭐</span>':''}
+    </div>
+    ${f.titulo?`<div style="padding:10px 12px">
+      <div style="font-weight:700;font-size:13px">${f.titulo}</div>
+      ${f.descripcion?`<div style="font-size:12px;color:var(--g);margin-top:2px">${f.descripcion}</div>`:''}
+    </div>`:''}
+  </div>`;
+}
+
+function openLightbox(idx) {
+  _lbIdx = idx;
+  document.getElementById('lightbox').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  updateLightbox();
+}
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  _lbIdx = (_lbIdx + dir + _lbFotos.length) % _lbFotos.length;
+  updateLightbox();
+}
+function updateLightbox() {
+  const f = _lbFotos[_lbIdx];
+  document.getElementById('lb-img').src = f.url;
+  document.getElementById('lb-caption').textContent = f.titulo || '';
+  document.getElementById('lb-counter').textContent = `${_lbIdx+1} / ${_lbFotos.length}`;
+}
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').style.display !== 'none') {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lbNav(-1);
+    if (e.key === 'ArrowRight') lbNav(1);
+  }
+});
+</script>
+</body></html>
