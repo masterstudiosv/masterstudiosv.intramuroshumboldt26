@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intramuros Humboldt 2026 — Gestión Deportiva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div id="login-screen" class="login-bg">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-stripe"></div>
+      <img src="logo/logo.png" alt="Logo" style="height:70px;width:auto;object-fit:contain;margin:0 auto 8px;display:block;border-radius:8px" onerror="this.style.display='none'"/>
+      <span class="login-badge">INTRAMUROS</span>
+      <h1 class="login-title">HUMBOLDT<br/><span class="login-year">2026</span></h1>
+      <p class="login-sub" style="font-size:13px;font-weight:600;color:#aaa;margin-bottom:2px">Complejo Educativo Alejandro de Humboldt</p>
+      <p class="login-sub">Sistema de Gestión Deportiva · Fútbol Sala</p>
+    </div>
+    <form id="login-form" onsubmit="return false;">
+      <div class="input-group">
+        <label>Usuario</label>
+        <input type="text" id="login-user" placeholder="Ingresa tu usuario" autocomplete="username" />
+      </div>
+      <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div id="login-error" class="login-error hidden">Usuario o contraseña incorrectos</div>
+      <button id="login-btn" class="btn btn-primary w-full mt-2" onclick="Auth.login()">INGRESAR AL SISTEMA</button>
+    </form>
+    <p class="login-footer">Complejo Educativo Alejandro de Humboldt · 2026</p>
+    <p style="text-align:center;margin-top:10px"><a href="index.html" style="color:#666;font-size:12px;text-decoration:none">← Volver a la página pública</a></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-badge">INTRAMUROS</div>
+      <div class="logo-title">HUMBOLDT<br/>FÚTBOL</div>
+      <div class="logo-year">2026</div>
+    </div>
+
+    <nav id="sidebar-nav">
+      <!-- Items inserted by JS based on role -->
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">A</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-username">Usuario</div>
+        <div class="user-role" id="sidebar-role">Rol</div>
+      </div>
+      <button class="btn-logout" onclick="Auth.logout()" title="Cerrar sesión">⏻</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main-content">
+
+    <!-- TOPBAR -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <button id="menu-toggle" onclick="UI.toggleSidebar()" class="menu-btn">☰</button>
+        <div id="page-title" class="page-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="live-indicator" id="live-indicator" style="display:none">
+          <span class="live-dot"></span> EN VIVO
+        </div>
+        <div class="topbar-time" id="topbar-time"></div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main id="content-area">
+      <!-- Dynamic content loaded here -->
+    </main>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- MODAL CONTAINER -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="Modal.closeOnOverlay(event)">
+  <div id="modal-box" class="modal-box">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- SCRIPTS -->
+<script src="js/config.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/toast.js"></script>
+<script src="modules/dashboard.js"></script>
+<script src="modules/categorias.js"></script>
+<script src="modules/equipos.js"></script>
+<script src="modules/jugadores.js"></script>
+<script src="modules/partidos.js"></script>
+<script src="modules/arbitros.js"></script>
+<script src="modules/usuarios.js"></script>
+<script src="modules/estadisticas.js"></script>
+<script src="modules/live-match.js"></script>
+<script src="modules/carrusel-admin.js"></script>
+<script src="modules/avisos-admin.js"></script>
+<script src="modules/galeria-admin.js"></script>
+<script src="modules/conexion.js"></script>
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

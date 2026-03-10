@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Posiciones — Intramuros Humboldt 2026</title>
+  <link rel="icon" href="../logo/logo.png" type="image/png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/public.css"/>
+</head><body>
+<nav id="topnav"></nav><div id="mob-nav"></div>
+<div id="admin-ribbon" style="display:none"><div class="ribbon-inner"><span class="ribbon-lbl">⚙️ MODO EDICIÓN</span><div style="display:flex;gap:8px"><button class="btn btn-s btn-sm" onclick="PubAdmin.logout()">✕</button></div></div></div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div><div class="page-hero-label">CLASIFICACIÓN</div><div class="page-hero-title">TABLA DE POSICIONES</div><div class="page-hero-sub">3 pts victoria · 1 pt empate · 0 pts derrota</div></div>
+    <a href="../index.html" class="back-link">← Inicio</a>
+  </div>
+</div>
+
+<main id="main">
+  <div id="stats-row" class="stats-row"></div>
+  <!-- one card per category -->
+  <div id="tablas-wrap"></div>
+</main>
+
+<footer id="page-footer"></footer>
+<div id="modal-bg" style="display:none"><div id="modal-box"><div id="modal-cnt"></div></div></div>
+<div id="toast-ct"></div>
+<script src="../js/config.js"></script>
+<script src="../js/sheets.js"></script>
+<script src="../js/public-common.js"></script>
+<script src="../js/pub-carousel.js"></script>
+<script src="../js/pub-notices.js"></script>
+<script>
+function render(){
+  const cats=DB.getCategorias();
+  // stats row
+  document.getElementById('stats-row').innerHTML=cats.map(c=>{
+    const t=DB.getTablaPosiciones(c.id);
+    const lider=t[0];
+    return `<div class="stat-box"><div class="stat-box-n" style="color:var(--y)">${lider?lider.pts:0}</div><div class="stat-box-l">${c.nombre}</div></div>`;
+  }).join('')+`<div class="stat-box"><div class="stat-box-n" style="color:var(--w)">${DB.getPartidos().filter(p=>p.estado==='finalizado').length}</div><div class="stat-box-l">JUGADOS</div></div>`;
+
+  document.getElementById('tablas-wrap').innerHTML=cats.map(c=>{
+    const tabla=DB.getTablaPosiciones(c.id);
+    return `<div class="card" style="margin-bottom:20px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--b4);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:10px;letter-spacing:3px;color:var(--r);font-weight:700;text-transform:uppercase;margin-bottom:3px">CATEGORÍA</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px">${c.nombre}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-x">${tabla.length} equipos</span>
+          <button onclick="shareTabla('${c.nombre}',window.location.href)" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--w);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px">
+            📤 Compartir
+          </button>
+        </div>
+      </div>
+      <div style="padding:12px">
+        ${tabla.length ? `<div class="table-wrap"><table class="st">
+          <thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead>
+          <tbody>${tabla.map((t,i)=>`<tr>
+            <td><span class="rk ${i===0?'rk1':i===1?'rk2':i===2?'rk3':''}">${i+1}</span></td>
+            <td><div style="display:flex;align-items:center;gap:9px">
+              <div style="width:24px;height:24px;background:var(--b5);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden">
+                ${t.escudo64&&t.escudo64.startsWith('data:')?`<img src="${t.escudo64}" style="width:100%;height:100%;object-fit:cover">`:'🛡️'}
+              </div><div><div style="font-weight:700">${t.nombre}</div><div style="font-size:11px;color:var(--g)">${t.seccion}</div></div>
+            </div></td>
+            <td>${t.pj}</td><td>${t.pg}</td><td>${t.pe}</td><td>${t.pp}</td>
+            <td>${t.gf}</td><td>${t.gc}</td>
+            <td style="color:${t.dg>=0?'#22c55e':'var(--r)'}">${t.dg>0?'+':''}${t.dg}</td>
+            <td><span style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--y)">${t.pts}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`
+        : '<div class="empty" style="padding:26px"><div class="empty-ico">📋</div><div class="empty-t">Sin partidos finalizados</div></div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+document.addEventListener('data-ready',render);
+
+function shareTabla(categoria, url) {
+  const text = '🏆 Tabla de Posiciones - ' + categoria + ' · Intramuros Humboldt 2026';
+  showShareModal(text, url);
+}
+
+// showShareModal está en public-common.js
+</script>
+</body></html>

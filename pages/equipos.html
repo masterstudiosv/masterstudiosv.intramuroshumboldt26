@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Equipos — Intramuros Humboldt 2026</title>
+  <link rel="icon" href="../logo/logo.png" type="image/png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/public.css"/>
+</head><body>
+<nav id="topnav"></nav><div id="mob-nav"></div>
+<div id="admin-ribbon" style="display:none"><div class="ribbon-inner"><span class="ribbon-lbl">⚙️ MODO EDICIÓN</span><div style="display:flex;gap:8px"><button class="btn btn-s btn-sm" onclick="PubAdmin.logout()">✕ Salir</button></div></div></div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-hero-label">PARTICIPANTES</div>
+      <div class="page-hero-title">EQUIPOS &amp; PLANTELES</div>
+      <div class="page-hero-sub">Toca un equipo para ver sus jugadores, fotos y estadísticas</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <select id="cat-filter" class="finput" style="width:190px" onchange="renderEquipos()">
+        <option value="">Todas las categorías</option>
+      </select>
+      <input id="search" class="finput" style="width:180px" placeholder="🔍 Buscar equipo..." oninput="renderEquipos()" />
+      <a href="../index.html" class="back-link">← Inicio</a>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+  <div id="stats-row" class="stats-row"></div>
+  <div id="equipos-wrap" class="teams-grid"></div>
+</main>
+
+<footer id="page-footer"></footer>
+<div id="modal-bg" style="display:none"><div id="modal-box"><div id="modal-cnt"></div></div></div>
+<div id="toast-ct"></div>
+<script src="../js/config.js"></script>
+<script src="../js/sheets.js"></script>
+<script src="../js/public-common.js"></script>
+<script src="../js/pub-carousel.js"></script>
+<script src="../js/pub-notices.js"></script>
+<script>
+function initFilters(){
+  const sel=document.getElementById('cat-filter');
+  DB.getCategorias().forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.nombre; sel.appendChild(o); });
+}
+function renderEquipos(){
+  const catId=document.getElementById('cat-filter').value;
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  let eqs=DB.getEquipos().filter(e=>e.estado==='activo');
+  if(catId) eqs=eqs.filter(e=>e.categoriaId===catId);
+  if(q) eqs=eqs.filter(e=>e.nombre.toLowerCase().includes(q)||e.seccion.toLowerCase().includes(q));
+
+  // stats
+  document.getElementById('stats-row').innerHTML=DB.getCategorias().map(c=>{
+    const n=DB.getEquipos().filter(e=>e.categoriaId===c.id&&e.estado==='activo').length;
+    return `<div class="stat-box"><div class="stat-box-n">${n}</div><div class="stat-box-l">${c.nombre}</div></div>`;
+  }).join('')+`<div class="stat-box"><div class="stat-box-n" style="color:var(--y)">${DB.getEquipos().filter(e=>e.estado==='activo').length}</div><div class="stat-box-l">TOTAL</div></div>`;
+
+  const el=document.getElementById('equipos-wrap');
+  if(!eqs.length){ el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🛡️</div><div class="empty-t">Sin equipos</div></div>'; return; }
+  el.innerHTML=eqs.map(eq=>{
+    const cat=DB.getCategoria(eq.categoriaId);
+    const jugs=DB.getJugadoresByEquipo(eq.id);
+    const pos=DB.getTablaPosiciones(eq.categoriaId).find(t=>t.id===eq.id)||{pj:0,pg:0,pe:0,pp:0,pts:0};
+    const shield=eq.escudo64&&eq.escudo64.startsWith('data:')?`<img src="${eq.escudo64}" alt="">`:'🛡️';
+    return `<div class="team-card" onclick="openTeamProfile('${eq.id}')">
+      <div class="tc-h"><div style="display:flex;gap:12px;align-items:center">
+        <div class="tc-shield">${shield}</div>
+        <div><div class="tc-name">${eq.nombre}</div><div class="tc-meta">${cat?.nombre||'—'} · Secc. ${eq.seccion}</div>
+        <div style="margin-top:5px"><span class="badge badge-x" style="font-size:10px">👤 ${jugs.length} jugadores</span></div></div>
+      </div></div>
+      <div class="tc-sts">${[['PJ',pos.pj],['PG',pos.pg],['PE',pos.pe],['PP',pos.pp]].map(([l,v])=>`<div><div class="tc-sn">${v}</div><div class="tc-sl">${l}</div></div>`).join('')}</div>
+      <div class="tc-ft"><span style="font-size:13px;color:var(--g)">Ver plantel →</span><span><span style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--y)">${pos.pts}</span> <span style="font-size:11px;color:var(--g)">PTS</span></span></div>
+    </div>`;
+  }).join('');
+  // open if hash
+  const hash=location.hash.replace('#','');
+  if(hash && eqs.find(e=>e.id===hash)) setTimeout(()=>openTeamProfile(hash),200);
+}
+
+function openTeamProfile(id){
+  const eq=DB.getEquipo(id); if(!eq) return;
+  const cat=DB.getCategoria(eq.categoriaId);
+  const jugs=DB.getJugadoresByEquipo(id);
+  const pos=DB.getTablaPosiciones(eq.categoriaId).find(t=>t.id===id)||{pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,dg:0,pts:0};
+  const shield=eq.escudo64&&eq.escudo64.startsWith('data:')?`<img src="${eq.escudo64}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`:'🛡️';
+  openModal(`
+    <div class="m-hd">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:46px;height:46px;background:var(--b4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden">${shield}</div>
+        <div><div class="m-title">${eq.nombre}</div><div style="font-size:12px;color:var(--g)">${cat?.nombre||'—'} · Sección ${eq.seccion}</div></div>
+      </div>
+      <button class="m-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="m-body">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:20px">
+        ${[['PJ',pos.pj],['PG',pos.pg],['PE',pos.pe],['PP',pos.pp],['GF',pos.gf||0],['GC',pos.gc||0],['PTS',pos.pts]].map(([l,v])=>
+          `<div style="text-align:center;background:var(--b4);border-radius:6px;padding:8px 3px">
+            <div style="font-family:'Bebas Neue',cursive;font-size:${l==='PTS'?22:17}px;color:${l==='PTS'?'var(--y)':'var(--w)'}">${v}</div>
+            <div style="font-size:9px;color:var(--g);letter-spacing:1px">${l}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:10px;letter-spacing:2.5px;color:var(--g);font-weight:700;text-transform:uppercase;margin-bottom:12px">PLANTEL — ${jugs.length} JUGADORES</div>
+      <div class="player-grid">
+        ${jugs.length?jugs.map(j=>{
+          const foto=j.foto64&&j.foto64.startsWith('data:')?`<img src="${j.foto64}" alt="${j.nombre}">`:`<span class="pc-init">${j.nombre[0]}</span>`;
+          return `<div class="pc">
+            <div class="pc-photo">${foto}<div class="pc-num">${j.numero}</div></div>
+            <div class="pc-body"><div class="pc-name">${j.nombre}</div><div class="pc-pos">${j.posicion||'—'} · ${j.edad} años</div></div>
+            <div class="pc-srow">
+              <div class="pc-s"><div class="pc-sv" style="color:var(--y)">${j.goles}</div><div class="pc-sl">⚽</div></div>
+              <div class="pc-s"><div class="pc-sv">${j.amarillas}</div><div class="pc-sl">🟨</div></div>
+              <div class="pc-s"><div class="pc-sv" style="color:var(--r)">${j.rojas}</div><div class="pc-sl">🟥</div></div>
+            </div>
+          </div>`;
+        }).join(''):'<div style="color:var(--g);text-align:center;padding:20px;grid-column:1/-1">Sin jugadores registrados</div>'}
+      </div>
+    </div>`,'lg');
+}
+document.addEventListener('data-ready',()=>{ initFilters(); renderEquipos(); });
+</script>
+</body></html>
