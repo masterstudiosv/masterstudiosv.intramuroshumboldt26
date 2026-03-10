@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intramuros Humboldt 2026 — Inicio</title>
+  <link rel="icon" href="logo/logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/public.css" />
+</head>
+<body>
+<nav id="topnav"></nav>
+<div id="mob-nav"></div>
+<div id="admin-ribbon" style="display:none">
+  <div class="ribbon-inner">
+    <span class="ribbon-lbl">⚙️ MODO EDICIÓN ACTIVO — Página pública</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-r btn-sm" onclick="Carousel.openAdmin()">🖼️ Gestionar Carrusel</button>
+      <button class="btn btn-y btn-sm" onclick="Notices.openForm()">📢 Nuevo Aviso</button>
+      <button class="btn btn-s btn-sm" onclick="PubAdmin.logout()">✕ Salir</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAROUSEL -->
+<div id="carousel-wrap">
+  <div id="c-track"></div>
+  <button class="c-btn" id="c-prev" onclick="Carousel.prev()">&#8249;</button>
+  <button class="c-btn" id="c-next" onclick="Carousel.next()">&#8250;</button>
+  <div id="c-dots"></div>
+</div>
+
+<main id="main">
+
+  <!-- PRÓXIMOS PARTIDOS (preview 3) -->
+  <section id="s-partidos">
+    <div class="sec-head">
+      <div><div class="sec-label">CALENDARIO</div><div class="sec-title">PRÓXIMOS PARTIDOS</div><div class="sec-sub">Partidos más cercanos y en curso</div></div>
+      <a href="pages/partidos.html" class="sec-link">Ver todos los partidos →</a>
+    </div>
+    <div id="partidos-wrap"></div>
+  </section>
+
+  <!-- POSICIONES (preview tab) -->
+  <section id="s-posiciones">
+    <div class="sec-head">
+      <div><div class="sec-label">CLASIFICACIÓN</div><div class="sec-title">TABLA DE POSICIONES</div></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="showShareModal('🏆 Tabla de Posiciones · Intramuros Humboldt 2026', window.location.origin+'/pages/posiciones.html')" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:var(--w);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">📤 Compartir</button>
+        <a href="pages/posiciones.html" class="sec-link">Ver tabla completa →</a>
+      </div>
+    </div>
+    <div class="card">
+      <div style="padding:16px 16px 0"><div id="pos-tabs" class="tab-bar"></div></div>
+      <div style="padding:14px"><div class="table-wrap" id="pos-table"></div></div>
+    </div>
+  </section>
+
+  <!-- EQUIPOS (preview) -->
+  <section id="s-equipos">
+    <div class="sec-head">
+      <div><div class="sec-label">PARTICIPANTES</div><div class="sec-title">EQUIPOS</div><div class="sec-sub">Toca un equipo para ver su plantel</div></div>
+      <a href="pages/equipos.html" class="sec-link">Ver todos los equipos →</a>
+    </div>
+    <div id="equipos-wrap" class="teams-grid"></div>
+  </section>
+
+  <!-- GOLEADORES (preview top 5) -->
+  <section id="s-goleadores">
+    <div class="sec-head">
+      <div><div class="sec-label">RANKING</div><div class="sec-title">GOLEADORES</div></div>
+      <a href="pages/goleadores.html" class="sec-link">Ver ranking completo →</a>
+    </div>
+    <div id="scorers-wrap" class="scorers-list"></div>
+  </section>
+
+  <!-- AVISOS (preview 3) -->
+  <section id="s-avisos">
+    <div class="sec-head">
+      <div><div class="sec-label">COMUNICADOS</div><div class="sec-title">AVISOS</div></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div id="aviso-add-btn" style="display:none">
+          <button class="btn btn-r btn-sm" onclick="Notices.openForm()">+ Nuevo Aviso</button>
+        </div>
+        <a href="pages/avisos.html" class="sec-link">Ver todos los avisos →</a>
+      </div>
+    </div>
+    <div id="avisos-wrap" class="notices-list"></div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="s-galeria">
+    <div class="sec-head">
+      <div><div class="sec-label">FOTOS DEL TORNEO</div><div class="sec-title">GALERÍA</div></div>
+      <a href="pages/galeria.html" class="sec-link">Ver galería completa →</a>
+    </div>
+    <div id="galeria-wrap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div>
+  </section>
+
+</main>
+<footer id="page-footer"></footer>
+<div id="modal-bg" style="display:none"><div id="modal-box"><div id="modal-cnt"></div></div></div>
+<div id="toast-ct"></div>
+
+<script src="js/config.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/public-common.js"></script>
+<script src="js/pub-carousel.js"></script>
+<script src="js/pub-notices.js"></script>
+<script>
+/* ─ INDEX PAGE LOGIC ─ */
+let _posTab = '';
+
+function renderPartidosHome(){
+  const el = document.getElementById('partidos-wrap');
+  const todos = DB.getPartidos();
+  const activos = todos.filter(p=>['en_juego','pausado','programado'].includes(p.estado))
+    .sort((a,b)=>{ const o={en_juego:0,pausado:1,programado:2}; return (o[a.estado]||3)-(o[b.estado]||3)||(a.fecha||'z').localeCompare(b.fecha||'z'); })
+    .slice(0,3);
+  if(!activos.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">📅</div><div class="empty-t">Sin partidos próximos</div><div class="empty-s">Los partidos aparecerán cuando se programen</div></div>';
+    return;
+  }
+  el.innerHTML=`<div class="matches-grid">${activos.map(p=>matchCardHTML(p)).join('')}</div>`;
+}
+
+function renderPosicionesHome(){
+  const cats = DB.getCategorias();
+  if(!cats.length) return;
+  if(!_posTab) _posTab = cats[0]?.id || '';
+  document.getElementById('pos-tabs').innerHTML = cats.map(c=>
+    `<button class="stab${_posTab===c.id?' active':''}" onclick="_posTab='${c.id}';renderPosTable()">${c.nombre}</button>`
+  ).join('');
+  renderPosTable();
+}
+
+function renderPosTable(){
+  document.querySelectorAll('#pos-tabs .stab').forEach(b=>b.classList.toggle('active',b.textContent===DB.getCategoria(_posTab)?.nombre));
+  const tabla = DB.getTablaPosiciones(_posTab);
+  const el = document.getElementById('pos-table');
+  if(!tabla.length){ el.innerHTML='<div class="empty" style="padding:26px"><div class="empty-ico">📋</div><div class="empty-t">Sin partidos finalizados</div></div>'; return; }
+  el.innerHTML=`<table class="st"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead>
+  <tbody>${tabla.map((t,i)=>`<tr>
+    <td><span class="rk ${i===0?'rk1':i===1?'rk2':i===2?'rk3':''}">${i+1}</span></td>
+    <td><div style="display:flex;align-items:center;gap:9px">
+      <div style="width:24px;height:24px;background:var(--b5);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden">
+        ${t.escudo64&&t.escudo64.startsWith('data:')?`<img src="${t.escudo64}" style="width:100%;height:100%;object-fit:cover">`:'🛡️'}
+      </div><div><div style="font-weight:700">${t.nombre}</div><div style="font-size:11px;color:var(--g)">${t.seccion}</div></div>
+    </div></td>
+    <td>${t.pj}</td><td>${t.pg}</td><td>${t.pe}</td><td>${t.pp}</td>
+    <td>${t.gf}</td><td>${t.gc}</td>
+    <td style="color:${t.dg>=0?'#22c55e':'var(--r)'}">${t.dg>0?'+':''}${t.dg}</td>
+    <td><span style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--y)">${t.pts}</span></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function renderEquiposHome(){
+  const equipos = DB.getEquipos().filter(e=>e.estado==='activo').slice(0,4);
+  const el = document.getElementById('equipos-wrap');
+  if(!equipos.length){ el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🛡️</div><div class="empty-t">Sin equipos</div></div>'; return; }
+  el.innerHTML = equipos.map(eq=>{
+    const cat=DB.getCategoria(eq.categoriaId);
+    const jugs=DB.getJugadoresByEquipo(eq.id);
+    const pos=DB.getTablaPosiciones(eq.categoriaId).find(t=>t.id===eq.id)||{pj:0,pg:0,pe:0,pp:0,pts:0};
+    const shield=eq.escudo64&&eq.escudo64.startsWith('data:')?`<img src="${eq.escudo64}" alt="${eq.nombre}">`:'🛡️';
+    return `<div class="team-card" onclick="location.href='pages/equipos.html#${eq.id}'">
+      <div class="tc-h"><div style="display:flex;gap:12px;align-items:center">
+        <div class="tc-shield">${shield}</div>
+        <div><div class="tc-name">${eq.nombre}</div><div class="tc-meta">${cat?.nombre||'—'} · Secc. ${eq.seccion}</div>
+        <div style="margin-top:5px"><span class="badge badge-x" style="font-size:10px">👤 ${jugs.length} jugadores</span></div></div>
+      </div></div>
+      <div class="tc-sts">${[['PJ',pos.pj],['PG',pos.pg],['PE',pos.pe],['PP',pos.pp]].map(([l,v])=>`<div><div class="tc-sn">${v}</div><div class="tc-sl">${l}</div></div>`).join('')}</div>
+      <div class="tc-ft"><span style="font-size:13px;color:var(--g)">Ver plantel →</span><span><span style="font-family:'Bebas Neue',cursive;font-size:22px;color:var(--y)">${pos.pts}</span> <span style="font-size:11px;color:var(--g)">PTS</span></span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderGoleadoresHome(){
+  const top=DB.getGoleadores().slice(0,5);
+  const el=document.getElementById('scorers-wrap');
+  if(!top.length){ el.innerHTML='<div class="empty"><div class="empty-ico">🥅</div><div class="empty-t">Sin goles</div></div>'; return; }
+  el.innerHTML=top.map((j,i)=>{
+    const eq=DB.getEquipo(j.equipoId);
+    const hue=(j.nombre.charCodeAt(0)*7)%360;
+    return `<div class="scorer-row">
+      <div class="sc-rk ${i===0?'rk1':i===1?'rk2':i===2?'rk3':''}">${i+1}</div>
+      <div class="sc-av" style="background:hsl(${hue},40%,28%)">${j.foto64&&j.foto64.startsWith('data:')?`<img src="${j.foto64}" alt="${j.nombre}">`:`${j.nombre[0]}`}</div>
+      <div class="sc-info"><div class="sc-nm">${j.nombre} <span style="color:var(--g);font-size:11px">#${j.numero}</span></div><div class="sc-tm">${eq?.nombre||'—'} · ${j.posicion||'—'}</div></div>
+      <div class="sc-meta">
+        <div class="sc-mi"><div class="sc-mi-n">${j.amarillas}</div><div class="sc-mi-l">🟨</div></div>
+        <div class="sc-mi"><div class="sc-mi-n" style="color:var(--r)">${j.rojas}</div><div class="sc-mi-l">🟥</div></div>
+      </div>
+      <div class="sc-gl">${j.goles}</div>
+    </div>`;
+  }).join('');
+}
+
+document.addEventListener('data-ready', ()=>{
+  Carousel.render();
+  renderPartidosHome();
+  renderPosicionesHome();
+  renderEquiposHome();
+  renderGoleadoresHome();
+  Notices.render(3);
+  renderGaleriaHome();
+  setInterval(()=>{ renderPartidosHome(); renderGoleadoresHome(); renderPosicionesHome(); }, 60000);
+});
+
+function renderGaleriaHome() {
+  const wrap = document.getElementById('galeria-wrap');
+  if (!wrap) return;
+  const fotos = DB.getGaleria ? DB.getGaleria().slice(0,6) : [];
+  if (!fotos.length) {
+    wrap.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--g);font-size:13px">📷 Pronto habrá fotos aquí</div>';
+    return;
+  }
+  wrap.innerHTML = fotos.map((f,idx) => `
+    <a href="pages/galeria.html" style="display:block;text-decoration:none">
+      <div class="card" style="overflow:hidden;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+        <div style="height:150px;overflow:hidden;background:var(--b4)">
+          <img src="${f.url}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''" onerror="this.parentElement.innerHTML='<div style=text-align:center;padding:50px;color:var(--g)>🖼️</div>'"/>
+        </div>
+        ${f.titulo?`<div style="padding:8px 10px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.titulo}</div>`:''}
+      </div>
+    </a>`).join('');
+}
+</script>
+</body>
+</html>

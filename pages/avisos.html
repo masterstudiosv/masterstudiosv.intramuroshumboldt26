@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Avisos — Intramuros Humboldt 2026</title>
+  <link rel="icon" href="../logo/logo.png" type="image/png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/public.css"/>
+</head><body>
+<nav id="topnav"></nav><div id="mob-nav"></div>
+<div id="admin-ribbon" style="display:none">
+  <div class="ribbon-inner">
+    <span class="ribbon-lbl">⚙️ MODO EDICIÓN — Avisos</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-r btn-sm" onclick="Carousel.openAdmin()">🖼️ Carrusel</button>
+      <button class="btn btn-y btn-sm" onclick="Notices.openForm()">+ Nuevo Aviso</button>
+      <button class="btn btn-s btn-sm" onclick="PubAdmin.logout()">✕ Salir</button>
+    </div>
+  </div>
+</div>
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div><div class="page-hero-label">COMUNICADOS OFICIALES</div><div class="page-hero-title">AVISOS</div><div class="page-hero-sub">Información importante del torneo</div></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div id="aviso-add-btn" style="display:none">
+        <button class="btn btn-r" onclick="Notices.openForm()">+ Nuevo Aviso</button>
+      </div>
+      <a href="../index.html" class="back-link">← Inicio</a>
+    </div>
+  </div>
+</div>
+<main id="main">
+  <div id="avisos-wrap" class="notices-list"></div>
+</main>
+<footer id="page-footer"></footer>
+<div id="modal-bg" style="display:none"><div id="modal-box"><div id="modal-cnt"></div></div></div>
+<div id="toast-ct"></div>
+<script src="../js/config.js"></script>
+<script src="../js/sheets.js"></script>
+<script src="../js/public-common.js"></script>
+<script src="../js/pub-carousel.js"></script>
+<script src="../js/pub-notices.js"></script>
+<script>
+document.addEventListener('data-ready',()=>Notices.render());
+</script>
+</body></html>
