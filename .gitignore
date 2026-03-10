@@ -1,0 +1,19 @@
+# ══════════════════════════════════════
+#  .gitignore — Intramuros Humboldt 2026
+# ══════════════════════════════════════
+
+#   CRÍTICO: Este archivo contiene credenciales reales
+#     (URL del GAS y WRITE_TOKEN). NUNCA subirlo a GitHub.
+# js/config.js  ← deshabilitado: este repo es privado, config sí se sube
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
